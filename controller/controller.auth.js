@@ -56,7 +56,6 @@ const signUpUser = async (req, res) => {
       .status(400)
       .json({ error: { path: "email", msg: "email already registered" } });
   }
-  console.log("hh");
   const newDocument = new Users({ ...req.body });
   const newCode = new activationToken({
     owner: newDocument._id,
@@ -64,7 +63,6 @@ const signUpUser = async (req, res) => {
   });
   await Promise.all([newDocument.save(), newCode.save()]);
   sendConfirmationEmail(newDocument);
-  console.log("hh");
   return res.status(200).json(newDocument);
 };
 const signUpCompany = async (req, res) => {

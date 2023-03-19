@@ -29,6 +29,19 @@ sendConfirmationEmail = (user) => {
         </div>`,
   });
 };
+sendAffirmationEmail = (user) => {
+  const name = user.fullName;
+  transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: "account confirmation",
+    html: ` <h1>Congratulations your account has ben confirmed</h1>
+        <h2>Hello ${name}</h2>
+        <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+        <a href=${frontUrl}/login> Click here</a>
+        </div>`,
+  });
+};
 sendRestEmail = (email) => {
   const code = jwt.sign({ email }, process.env.JWT_SECRET, {
     expiresIn: "15d",
@@ -44,4 +57,4 @@ sendRestEmail = (email) => {
         </div>`,
   });
 };
-module.exports = { sendConfirmationEmail, sendRestEmail };
+module.exports = { sendConfirmationEmail, sendRestEmail, sendAffirmationEmail };

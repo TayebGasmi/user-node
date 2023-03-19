@@ -1,9 +1,11 @@
 yup = require("yup");
 const companyValidator = yup.object().shape({
-  name: yup.string().required().max(50).min(2),
+  fullName: yup.string().required().max(50).min(2),
   password: yup.string().required().max(1024).min(8),
   email: yup.string().email().required(),
-  description: yup.string().required(),
+  role: yup.string().required().oneOf(["expert", "company", "user"]),
+  address: yup.string().required().max(50).min(2),
+  city: yup.string().required().max(50).min(2),
 });
 const companyProfileValidator = yup.object().shape({
   name: yup.string().required().max(50).min(2),

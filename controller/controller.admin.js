@@ -1,5 +1,6 @@
 const Users = require("../models/model.user");
 const Companies = require("../models/model.company");
+const { sendAffirmationEmail } = require("../utils/mail");
 const blockUser = async (req, res) => {
   const { id } = req.params;
   const user = Users.findByIdAndUpdate(id, { isBlocked: true });
@@ -23,6 +24,7 @@ const unblockCompany = async (req, res) => {
 const confirmUser = async (req, res) => {
   const { id } = req.params;
   const user = Users.findByIdAndUpdate(id, { isConfirmed: true });
+  sendAffirmationEmail(user);
   return res.status(200).json(user);
 };
 const unConfirmUser = async (req, res) => {
@@ -33,6 +35,7 @@ const unConfirmUser = async (req, res) => {
 const confirmCompany = async (req, res) => {
   const { id } = req.params;
   const company = Companies.findByIdAndUpdate(id, { isConfirmed: true });
+  sendAffirmationEmail(company);
   return res.status(200).json(company);
 };
 const unConfirmCompany = async (req, res) => {
@@ -44,8 +47,8 @@ const getUsers = async (req, res) => {
   const block = req.query.block;
   const confirm = req.query.confirm;
   const users = await Users.find({
-    isBlocked: block,
-    isConfirmed: confirm,
+    isBlocked: block || false,
+    isConfirmed: confirm || false,
     isActive: true,
   });
   return res.status(200).json(users);

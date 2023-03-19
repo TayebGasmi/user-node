@@ -20,12 +20,7 @@ app.use("/data", express.static(path.join(__dirname, "public")));
 // error handler
 app.use(function (err, req, res, next) {
   console.log(err.message);
-  return res.status(err.status || 500).json({
-    error: {
-      message: err.message,
-    },
-    status: err.status || 500,
-  });
+  return res.status(err.status || 500).json({ error: err.message });
 });
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server is running on port ${process.env.PORT || 5000}`);

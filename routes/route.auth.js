@@ -13,15 +13,14 @@ const {
 const { upload } = require("../utils/upload");
 const { companyValidator } = require("../validators/validators.company");
 const { loginValidator } = require("../validators/validators.auth");
-const { userValidator } = require("../validators/validators.user"); //user direct signIn expert and company wait for admin confirmation
-router.post("/signIn", validate(loginValidator), signIn); //admin conf account for company and expert
+const { userValidator } = require("../validators/validators.user");
+router.post("/signIn", validate(loginValidator), signIn);
 router.post(
   "/expert",
   upload.single("expertise"),
   validate(userValidator),
   signUpExpert
 );
-// + expert user isConfirmed = true by default + company expert isConfirmed = false by default
 router.post(
   "/company",
   upload.single("registerCommerce"),

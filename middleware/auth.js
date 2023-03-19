@@ -14,11 +14,10 @@ exports.authorizeAdmin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email } = decoded;
     const user = await UserModel.findOne({ email });
-    console.log(user);
     if (!user) {
       return res.status(400).send("Invalid token.");
     }
-    if (!user.isAdmin) {
+    if (!user.role === "admin") {
       return res.status(403).send("Access denied.");
     }
     next();
@@ -40,31 +39,30 @@ exports.authorize = (roles) => {
     token = token.split(" ")[1];
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const { email } = decoded;
+      const { email, role } = decoded;
       const user = await UserModel.findOne({ email });
       const company = await CompanyModel.findOne({ email });
       const document = user || company;
       if (!document) {
         return res.status(400).send("Invalid token.");
       }
-      console.log(roles);
-      if (company && roles.includes("COMPANY")) {
+      if (company && roles.includes("company")) {
         req.email = email;
         req.id = company._id;
-        req.role = "COMPANY";
+        req.role = "company";
         return next();
       }
-      if (user && roles.includes("USER")) {
+      if (user && roles.includes("user")) {
         console.log("user");
         req.email = email;
         req.id = user._id;
-        req.role = "USER";
+        req.role = "user";
         return next();
       }
-      if (user && roles.includes("EXPERT") && user.isExpert) {
+      if (user && roles.includes("expert") && user.isExpert) {
         req.email = email;
         req.id = user._id;
-        req.role = "EXPERT";
+        req.role = "expert";
         return next();
       }
       return res.status(403).send("Access denied.");
