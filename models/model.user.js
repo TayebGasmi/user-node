@@ -15,6 +15,7 @@ const userSchema = new Schema(
     birthDate: { required: true, type: Date }, //signup
     gender: { required: true, type: String, enum: ["female", "male"] }, //signup
     isBlocked: { type: Boolean, default: false },
+    blockedReason: { type: String },
     isActive: { type: Boolean, default: false },
     isConfirmed: { type: Boolean, default: false },
     picture: { type: String },

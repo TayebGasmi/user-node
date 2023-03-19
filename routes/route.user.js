@@ -8,6 +8,9 @@ const { upload } = require("../utils/upload");
 const {
   updatePassword,
   updateProfile,
+  updateCoverPhoto,
+  updatePicture,
+  updateCV,
 } = require("../controller/controller.user");
 const { userProfile } = require("../validators/validators.user");
 const { changePassword } = require("../validators/validators.changePassword");
@@ -18,6 +21,19 @@ router.put(
   validate(changePassword),
   updatePassword
 );
+router.put(
+  "/coverPhoto",
+  authorize([USER]),
+  upload.single("coverPhoto"),
+  updateCoverPhoto
+);
+router.put(
+  "/picture",
+  authorize([USER]),
+  upload.single("picture"),
+  updatePicture
+);
+router.put("/cv", authorize([USER]), upload.single("cv"), updateCV);
 router.post("/upload", upload.single("file"), (req, res) => {
   res.status(200).json({ file: req.file });
 });

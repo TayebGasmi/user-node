@@ -20,16 +20,16 @@ const {
 router.get("/", authorizeAdmin, getUsers);
 router.get("/companies", authorizeAdmin, getCompanies);
 
-router.patch("/", verifyDoc(Users, "id"), blockUser);
-router.patch("/company", verifyDoc(Companies, "id"), blockCompany);
-router.patch("/confirm", verifyDoc(Users, "id"), confirmUser);
-router.patch("/unconfirm", verifyDoc(Users, "id"), unConfirmUser);
-router.patch("/company/confirm", verifyDoc(Companies, "id"), confirmCompany);
-router.patch(
-  "/company/unconfirm",
+router.put("/user/block/:id", blockUser);
+router.put("/company/block/:id", verifyDoc(Companies, "id"), blockCompany);
+router.get("/user/confirm/:id", verifyDoc(Users, "id"), confirmUser);
+router.get("/user/unconfirm/:id", verifyDoc(Users, "id"), unConfirmUser);
+router.get("/company/confirm/:id", verifyDoc(Companies, "id"), confirmCompany);
+router.get(
+  "/company/unconfirm/:id",
   verifyDoc(Companies, "id"),
   unConfirmCompany
 );
-router.patch("/unblock", verifyDoc(Users, "id"), unblockUser);
-router.patch("/company/unblock", verifyDoc(Companies, "id"), unblockCompany);
+router.put("user/unblock/:id", verifyDoc(Users, "id"), unblockUser);
+router.put("/company/unblock/:id", verifyDoc(Companies, "id"), unblockCompany);
 module.exports = router;

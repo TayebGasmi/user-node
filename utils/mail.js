@@ -57,4 +57,21 @@ sendRestEmail = (email) => {
         </div>`,
   });
 };
-module.exports = { sendConfirmationEmail, sendRestEmail, sendAffirmationEmail };
+sendBlockEmail = (email, blockReason) => {
+  transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "account blocked",
+    html: ` <h1>your account has been blocked</h1>
+        <h2>Hello </h2>
+        <p>your account has been blocked for the following reason</p>
+        <p>${blockReason}</p>
+        </div>`,
+  });
+};
+module.exports = {
+  sendConfirmationEmail,
+  sendRestEmail,
+  sendAffirmationEmail,
+  sendBlockEmail,
+};
