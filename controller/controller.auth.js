@@ -8,8 +8,36 @@ const client = new OAuth2Client();
 const { AUTH_ROLES } = require("../middleware/auth");
 const signUpExpert = async (req, res) => {
   const expertise = [];
-  expertise.push(req.file.path);
-  req.body.expertise = expertise;
+  expertise.push(req.file?.path);
+  const document = await Users.findOne({ email: req.body.email })
+    .select({ email: 1 })
+    .lean()
+    .exec();
+  const other = await Companies.findOne({ email: req.body.email })
+    .select({ email: 1 })
+    .lean()
+    .exec();
+  if (document) {
+    return res
+      .status(400)
+      .json({ error: { path: "email", msg: "email already registered" } });
+  }
+  if (other) {
+    return res
+      .status(400)
+      .json({ error: { path: "email", msg: "email already registered" } });
+  }
+  console.log("hh");
+  const newDocument = new Users({ ...req.body, expertise });
+  const newCode = new activationToken({
+    owner: newDocument._id,
+    ref: Users.collection.name,
+  });
+  await Promise.all([newDocument.save(), newCode.save()]);
+  sendConfirmationEmail(newDocument);
+  return res.status(200).json(newDocument);
+};
+const signUpUser = async (req, res) => {
   const document = await Users.findOne({ email: req.body.email })
     .select({ email: 1 })
     .lean()
@@ -37,6 +65,35 @@ const signUpExpert = async (req, res) => {
   await Promise.all([newDocument.save(), newCode.save()]);
   sendConfirmationEmail(newDocument);
   console.log("hh");
+  return res.status(200).json(newDocument);
+};
+const signUpCompany = async (req, res) => {
+  const registerCommerce = req.file?.path;
+  const document = await Companies.findOne({ email: req.body.email })
+    .select({ email: 1 })
+    .lean()
+    .exec();
+  const other = await Users.findOne({ email: req.body.email })
+    .select({ email: 1 })
+    .lean()
+    .exec();
+  if (document) {
+    return res
+      .status(400)
+      .json({ error: { path: "email", msg: "email already registered" } });
+  }
+  if (other) {
+    return res
+      .status(400)
+      .json({ error: { path: "email", msg: "email already registered" } });
+  }
+  const newDocument = new Companies({ ...req.body, registerCommerce });
+  const newCode = new activationToken({
+    owner: newDocument._id,
+    ref: Users.collection.name,
+  });
+  await Promise.all([newDocument.save(), newCode.save()]);
+  sendConfirmationEmail(newDocument);
   return res.status(200).json(newDocument);
 };
 const signInWithGoogle = async (req, res, next) => {
@@ -200,4 +257,6 @@ module.exports = {
   restPasswordMail,
   restPasswordToken,
   signInWithGoogle,
+  signUpUser,
+  signUpCompany,
 };
