@@ -8,11 +8,6 @@ const userValidator = yup.object().shape({
   gender: yup.string().required().max(255).oneOf(["male", "female", "other"]),
   city: yup.string().required().max(255),
   role: yup.string().required().max(255).oneOf(["user", "admin", "expert"]),
-  expertise: yup.string().when("role", {
-    is: (val) => val === "expert",
-    then: yup.string().required().max(255),
-    otherwise: yup.string().notRequired(),
-  }),
 });
 const userProfile = yup.object().shape({
   fullName: yup.string().required().max(255),

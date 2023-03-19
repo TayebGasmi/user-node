@@ -4,7 +4,12 @@ const bcrypt = require("bcrypt");
 const userSchema = new Schema(
   {
     fullName: { required: true, type: String, maxLength: 255, trim: true }, // signup
-    password: { required: true, type: String, minLength: 8, maxLength: 1024 }, // signup
+    password: {
+      required: true,
+      type: String,
+      minLength: 8,
+      maxLength: 1024,
+    }, // signup
     role: { type: String, enum: ["user", "admin", "expert"], default: "user" },
     email: { required: true, type: String, unique: true }, //signup
     birthDate: { required: true, type: Date }, //signup

@@ -6,12 +6,15 @@ const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
 const { AUTH_ROLES } = require("../middleware/auth");
-const signUp = (Model, Other) => async (req, res) => {
-  const document = await Model.findOne({ email: req.body.email })
+const signUpExpert = async (req, res) => {
+  const expertise = [];
+  expertise.push(req.file.path);
+  req.body.expertise = expertise;
+  const document = await Users.findOne({ email: req.body.email })
     .select({ email: 1 })
     .lean()
     .exec();
-  const other = await Other.findOne({ email: req.body.email })
+  const other = await Companies.findOne({ email: req.body.email })
     .select({ email: 1 })
     .lean()
     .exec();
@@ -25,13 +28,15 @@ const signUp = (Model, Other) => async (req, res) => {
       .status(400)
       .json({ error: { path: "email", msg: "email already registered" } });
   }
-  const newDocument = new Model({ ...req.body });
+  console.log("hh");
+  const newDocument = new Users({ ...req.body });
   const newCode = new activationToken({
     owner: newDocument._id,
-    ref: Model.collection.name,
+    ref: Users.collection.name,
   });
   await Promise.all([newDocument.save(), newCode.save()]);
   sendConfirmationEmail(newDocument);
+  console.log("hh");
   return res.status(200).json(newDocument);
 };
 const signInWithGoogle = async (req, res, next) => {
@@ -123,11 +128,9 @@ const signIn = async (req, res) => {
   if (document.isBlocked) {
     return res.status(400).json({ error: "blocked" });
   }
-  console.log([AUTH_ROLES.EXPERT, AUTH_ROLES.COMPANY].contains(document.role));
-  if (
-    !document.isConfirmed &&
-    document.role in [AUTH_ROLES.EXPERT, AUTH_ROLES.COMPANY]
-  ) {
+  const confirmationRole = [AUTH_ROLES.EXPERT, AUTH_ROLES.COMPANY];
+  console.log(confirmationRole.includes(document.role));
+  if (!document.isConfirmed && confirmationRole.includes(document.role)) {
     return res.status(400).json({ error: "not confirmed" });
   }
   return res.status(200).json({
@@ -191,7 +194,7 @@ const restPasswordToken = () => async (req, res) => {
 };
 
 module.exports = {
-  signUp,
+  signUpExpert,
   signIn,
   confirmAccount,
   restPasswordMail,

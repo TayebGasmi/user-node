@@ -1,59 +1,74 @@
 const Users = require("../models/model.user");
 const Companies = require("../models/model.company");
 const blockUser = async (req, res) => {
-  try {
-    const user = await Users.findById(req.params.id);
-    user.isBlocked = true;
-    await user.save();
-    return res.status(200).json("blocked");
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+  const { id } = req.params;
+  const user = Users.findByIdAndUpdate(id, { isBlocked: true });
+  return res.status(200).json(user);
 };
 const unblockUser = async (req, res) => {
-  try {
-    const user = await Users.findById(req.params.id);
-    user.isBlocked = false;
-    await user.save();
-    return res.status(200).json("unblocked");
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+  const { id } = req.params;
+  const user = Users.findByIdAndUpdate(id, { isBlocked: false });
+  return res.status(200).json(user);
 };
-const verifyCompany = async (req, res) => {
-  try {
-    const company = await Companies.findById(req.params.id).exec();
-    company = true;
-    await company.save();
-    return res.status(200).json("verfied");
-  } catch (err) {
-    return res.status(500).json({ error: error.message });
-  }
+const blockCompany = async (req, res) => {
+  const { id } = req.params;
+  const company = Companies.findByIdAndUpdate(id, { isBlocked: true });
+  return res.status(200).json(company);
 };
-const unverifyCompany = async (req, res) => {
-  try {
-    const company = await Companies.findById(req.params.id).exec();
-    company.verfied = false;
-    await company.save();
-    return res.status(200).json("unverfied");
-  } catch (err) {
-    return res.status(500).json({ error: error.message });
-  }
+const unblockCompany = async (req, res) => {
+  const { id } = req.params;
+  const company = Companies.findByIdAndUpdate(id, { isBlocked: false });
+  return res.status(200).json(company);
 };
-
-const getBlockedUser = async (req, res) => {
-  try {
-    const users = await Users.find({ isBlocked: true }).lean();
-    if (users.length === 0) return res.status(204).json(users);
-    return res.status(200).json(users);
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+const confirmUser = async (req, res) => {
+  const { id } = req.params;
+  const user = Users.findByIdAndUpdate(id, { isConfirmed: true });
+  return res.status(200).json(user);
+};
+const unConfirmUser = async (req, res) => {
+  const { id } = req.params;
+  const user = Users.findByIdAndUpdate(id, { isConfirmed: false });
+  return res.status(200).json(user);
+};
+const confirmCompany = async (req, res) => {
+  const { id } = req.params;
+  const company = Companies.findByIdAndUpdate(id, { isConfirmed: true });
+  return res.status(200).json(company);
+};
+const unConfirmCompany = async (req, res) => {
+  const { id } = req.params;
+  const company = Companies.findByIdAndUpdate(id, { isConfirmed: false });
+  return res.status(200).json(company);
+};
+const getUsers = async (req, res) => {
+  const block = req.query.block;
+  const confirm = req.query.confirm;
+  const users = await Users.find({
+    isBlocked: block,
+    isConfirmed: confirm,
+    isActive: true,
+  });
+  return res.status(200).json(users);
+};
+const getCompanies = async (req, res) => {
+  const block = req.query.block;
+  const confirm = req.query.confirm;
+  const companies = await Companies.find({
+    isBlocked: block,
+    isConfirmed: confirm,
+    isActive: true,
+  });
+  return res.status(200).json(companies);
 };
 module.exports = {
   blockUser,
   unblockUser,
-  verifyCompany,
-  unverifyCompany,
-  getBlockedUser,
+  blockCompany,
+  unblockCompany,
+  confirmUser,
+  unConfirmUser,
+  confirmCompany,
+  unConfirmCompany,
+  getUsers,
+  getCompanies,
 };

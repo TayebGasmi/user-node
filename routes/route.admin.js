@@ -3,34 +3,33 @@ var router = express.Router();
 const Users = require("../models/model.user");
 const Companies = require("../models/model.company");
 const { authorizeAdmin, AUTH_ROLES } = require("../middleware/auth");
-const { COMPANY } = AUTH_ROLES;
+const { verifyDoc } = require("../middleware/verfieDocument");
 const {
-  verifyCompany,
-  unverifyCompany,
   blockUser,
   unblockUser,
-  getBlockedUser,
+  blockCompany,
+  unblockCompany,
+  confirmUser,
+  unConfirmUser,
+  confirmCompany,
+  unConfirmCompany,
+  getUsers,
+  getCompanies,
 } = require("../controller/controller.admin");
-const { verifyDoc } = require("../middleware/verfieDocument");
-/* GET users listing. */
-router.get("/blocked", authorizeAdmin, getBlockedUser);
-router.put("/block/:id", authorizeAdmin, verifyDoc(Users), blockUser);
-router.put("/unblock/:id", authorizeAdmin, verifyDoc(Users), unblockUser);
-router.put(
-  "/company/verify/:id/",
-  authorizeAdmin,
-  verifyDoc(Companies),
-  verifyCompany
+
+router.get("/", authorizeAdmin, getUsers);
+router.get("/companies", authorizeAdmin, getCompanies);
+
+router.patch("/", verifyDoc(Users, "id"), blockUser);
+router.patch("/company", verifyDoc(Companies, "id"), blockCompany);
+router.patch("/confirm", verifyDoc(Users, "id"), confirmUser);
+router.patch("/unconfirm", verifyDoc(Users, "id"), unConfirmUser);
+router.patch("/company/confirm", verifyDoc(Companies, "id"), confirmCompany);
+router.patch(
+  "/company/unconfirm",
+  verifyDoc(Companies, "id"),
+  unConfirmCompany
 );
-router.put(
-  "/company/unverify/:id/",
-  authorizeAdmin,
-  verifyDoc(Companies),
-  unverifyCompany
-);
-//display all users and companies
-// admin confirm account for company and expert send email url login
-// admin block user and company
-// admin retrive blocked accounts
-// admin view profile
+router.patch("/unblock", verifyDoc(Users, "id"), unblockUser);
+router.patch("/company/unblock", verifyDoc(Companies, "id"), unblockCompany);
 module.exports = router;
